@@ -81,7 +81,7 @@ static v8_class_t	*v8_classes;
 static v8_enum_t	v8_types[128];
 static int 		v8_next_type;
 
-static v8_enum_t 	v8_frametypes[16];
+static v8_enum_t 	v8_frametypes[32];
 static int 		v8_next_frametype;
 
 static int		v8_warnings;
@@ -462,9 +462,11 @@ static v8_offset_t v8_offsets[] = {
 	{ &V8_OFF_JSOBJECT_PROPERTIES,
 	    "JSObject", "properties", B_FALSE,
 		V8_CONSTANT_REMOVED_SINCE(4, 9) },
-	{ &V8_OFF_JSRECEIVER_PROPERTIES,
-	    "JSReceiver", "properties", B_FALSE,
-		V8_CONSTANT_ADDED_SINCE(4, 9) },
+
+	{ &V8_OFF_JSRECEIVER_PROPERTIES, "JSReceiver" , "raw_properties_or_hash" },
+	// { &V8_OFF_JSRECEIVER_PROPERTIES,
+	//     "JSReceiver", "properties", B_FALSE,
+	// 	V8_CONSTANT_ADDED_SINCE(4, 9) },
 	{ &V8_OFF_JSREGEXP_DATA,
 	    "JSRegExp", "data", B_TRUE },
 	{ &V8_OFF_MAP_CONSTRUCTOR,
@@ -536,7 +538,8 @@ static v8_offset_t v8_offsets[] = {
 	{ &V8_OFF_SHAREDFUNCTIONINFO_LENGTH,
 	    "SharedFunctionInfo", "length" },
 	{ &V8_OFF_SHAREDFUNCTIONINFO_NAME,
-	    "SharedFunctionInfo", "name" },
+			// "SharedFunctionInfo", "name" },
+			"SharedFunctionInfo", "raw_name" },
 	{ &V8_OFF_SHAREDFUNCTIONINFO_SCOPE_INFO,
 	    "SharedFunctionInfo", "scope_info", B_TRUE },
 	{ &V8_OFF_SHAREDFUNCTIONINFO_SCRIPT,
@@ -1348,7 +1351,7 @@ conf_update_type(v8_cfg_t *cfgp, const char *symbol)
 	v8_enum_t *enp;
 	char buf[128];
 
-	if (v8_next_type > sizeof (v8_types) / sizeof (v8_types[0])) {
+	if (v8_next_type >= sizeof (v8_types) / sizeof (v8_types[0])) {
 		mdb_warn("too many V8 types\n");
 		return (-1);
 	}
@@ -1373,7 +1376,7 @@ conf_update_frametype(v8_cfg_t *cfgp, const char *symbol)
 	const char *frametype;
 	v8_enum_t *enp;
 
-	if (v8_next_frametype >
+	if (v8_next_frametype >=
 	    sizeof (v8_frametypes) / sizeof (v8_frametypes[0])) {
 		mdb_warn("too many V8 frame types\n");
 		return (-1);
