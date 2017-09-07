@@ -142,6 +142,9 @@ static intptr_t	V8_PROP_DESC_KEY;
 static intptr_t	V8_PROP_DESC_DETAILS;
 static intptr_t	V8_PROP_DESC_VALUE;
 static intptr_t	V8_PROP_DESC_SIZE;
+static intptr_t V8_PROP_LOCATION_MASK;
+static intptr_t V8_PROP_LOCATION_ENUM_KFIELD;
+static intptr_t V8_PROP_LOCATION_SHIFT;
 static intptr_t	V8_TRANSITIONS_IDX_DESC;
 
 intptr_t V8_TYPE_ACCESSORINFO = -1;
@@ -340,8 +343,13 @@ static v8_constant_t v8_constants[] = {
 	{ &V8_ISSHARED_SHIFT,		"v8dbg_isshared_shift",
 	    V8_CONSTANT_FALLBACK(3, 11), 0 },
 	{ &V8_PROP_IDX_FIRST,		"v8dbg_prop_idx_first"		},
-	{ &V8_PROP_TYPE_FIELD,		"v8dbg_prop_type_field"		},
-	{ &V8_PROP_TYPE_MASK,		"v8dbg_prop_type_mask"		},
+	{ &V8_PROP_TYPE_FIELD,		"v8dbg_prop_type_field", -1 },
+	{ &V8_PROP_TYPE_MASK,		"v8dbg_prop_type_mask", -1 },
+
+	{ &V8_PROP_LOCATION_MASK,		"v8dbg_prop_location_mask" },
+	{ &V8_PROP_LOCATION_ENUM_KFIELD, "v8dbg_prop_location_Field" },
+	{ &V8_PROP_LOCATION_SHIFT,		"v8dbg_prop_location_shift" },
+
 	{ &V8_PROP_IDX_CONTENT,		"v8dbg_prop_idx_content",
 	    V8_CONSTANT_OPTIONAL },
 	{ &V8_PROP_DESC_KEY,		"v8dbg_prop_desc_key",
