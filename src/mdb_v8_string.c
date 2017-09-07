@@ -17,7 +17,7 @@
 #include "mdb_v8_dbg.h"
 #include "mdb_v8_impl.h"
 #include "v8dbg.h"
-
+#include <stdio.h>
 #include <assert.h>
 #include <ctype.h>
 
@@ -44,6 +44,10 @@ struct v8string {
 			uintptr_t	v8s_external_data;
 			uintptr_t	v8s_external_nodedata;
 		} v8s_external;
+
+		struct {
+			uintptr_t v8s_thin_actual;
+		} v8s_thininfo;
 	} v8s_info;
 };
 
@@ -54,6 +58,8 @@ static int v8string_write_cons(v8string_t *, mdbv8_strbuf_t *,
 static int v8string_write_ext(v8string_t *, mdbv8_strbuf_t *,
     mdbv8_strappend_flags_t, v8string_flags_t);
 static int v8string_write_sliced(v8string_t *, mdbv8_strbuf_t *,
+    mdbv8_strappend_flags_t, v8string_flags_t);
+static int v8string_write_thin(v8string_t *, mdbv8_strbuf_t *,
     mdbv8_strappend_flags_t, v8string_flags_t);
 
 static const char *v8s_truncate_marker = "[...]";
@@ -81,7 +87,8 @@ v8string_load(uintptr_t addr, int memflags)
 	}
 
 	if (!V8_STRREP_SEQ(type) && !V8_STRREP_CONS(type) &&
-	    !V8_STRREP_EXT(type) && !V8_STRREP_SLICED(type)) {
+	    !V8_STRREP_EXT(type) && !V8_STRREP_SLICED(type) &&
+			!V8_STRREP_THIN(type)) {
 		v8_warn("unsupported string representation: %p\n", addr);
 		return (NULL);
 	}
@@ -127,6 +134,15 @@ v8string_load(uintptr_t addr, int memflags)
 		    strp->v8s_info.v8s_external.v8s_external_data,
 		    NODE_OFF_EXTSTR_DATA) != 0) {
 			v8_warn("failed to read node string: %p\n", addr);
+			goto fail;
+		}
+	} else if (V8_STRREP_THIN(type)) {
+printf("*** got a thin string\n");
+		if (read_heap_ptr(
+		    &strp->v8s_info.v8s_thininfo.v8s_thin_actual,
+		    addr, V8_OFF_THINSTRING_ACTUAL) != 0) {
+printf("***** failed to read the thin string\n");
+			v8_warn("failed to read thin string: %p\n", addr);
 			goto fail;
 		}
 	}
@@ -213,6 +229,8 @@ v8string_write(v8string_t *strp, mdbv8_strbuf_t *strb,
 		err = v8string_write_cons(strp, strb, strflags, v8flags);
 	} else if (V8_STRREP_EXT(type)) {
 		err = v8string_write_ext(strp, strb, strflags, v8flags);
+	} else if (V8_STRREP_THIN(type)) {
+		err = v8string_write_thin(strp, strb, strflags, v8flags);
 	} else {
 		/* Types are checked in v8string_load(). */
 		assert(V8_STRREP_SLICED(type));
@@ -694,4 +712,44 @@ v8string_write_ext(v8string_t *strp, mdbv8_strbuf_t *strb,
 	}
 
 	return (err);
+}
+
+/*
+ * Implementation of v8string_write() for ThinStrings.
+ */
+static int
+v8string_write_thin(v8string_t *strp, mdbv8_strbuf_t *strb,
+    mdbv8_strappend_flags_t strflags, v8string_flags_t v8flags)
+{
+	uintptr_t actual_addr;
+	v8string_t *actual;
+	v8string_flags_t flags;
+	int rv = 0;
+
+	actual_addr = strp->v8s_info.v8s_thininfo.v8s_thin_actual;
+
+	if ((v8flags & JSSTR_VERBOSE) != 0) {
+		mdb_printf("thin str %p: actual %p\n", strp->v8s_addr, actual_addr);
+	}
+
+	actual = v8string_load(
+	    strp->v8s_info.v8s_thininfo.v8s_thin_actual, strp->v8s_memflags);
+
+	if (actual == NULL) {
+		mdbv8_strbuf_sprintf(strb,
+		    "<string (failed to read thin ptr)>");
+	} else {
+		flags = JSSTR_BUMPDEPTH(v8flags);
+
+/******/
+mdb_printf("*** thin str %p: actual %p\n", strp->v8s_addr, actual_addr);
+mdb_printf("**** actual: %s\n", actual);
+size_t nstrchrs = v8string_length(strp);
+printf("**** str %p: length %d chars\n", (void*) strp->v8s_addr, (int)nstrchrs);
+		rv = v8string_write(actual, strb, strflags, flags);
+mdb_printf("**** string is: %s\n", strb);
+	}
+
+	v8string_free(actual);
+	return (rv);
 }

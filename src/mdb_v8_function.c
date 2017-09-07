@@ -16,7 +16,7 @@
 
 #include <assert.h>
 #include <strings.h>
-
+#include <stdio.h>
 #include "v8dbg.h"
 #include "mdb_v8_dbg.h"
 #include "mdb_v8_impl.h"

@@ -67,6 +67,7 @@ extern intptr_t V8_SeqStringTag;
 extern intptr_t V8_ConsStringTag;
 extern intptr_t V8_SlicedStringTag;
 extern intptr_t V8_ExternalStringTag;
+extern intptr_t V8_ThinStringTag;
 extern intptr_t V8_CompilerHints_BoundFunction;
 
 extern ssize_t V8_OFF_CODE_INSTRUCTION_SIZE;
@@ -98,6 +99,7 @@ extern ssize_t V8_OFF_SHAREDFUNCTIONINFO_SCRIPT;
 extern ssize_t V8_OFF_SLICEDSTRING_PARENT;
 extern ssize_t V8_OFF_SLICEDSTRING_OFFSET;
 extern ssize_t V8_OFF_STRING_LENGTH;
+extern ssize_t V8_OFF_THINSTRING_ACTUAL;
 
 extern intptr_t V8_CONTEXT_IDX_CLOSURE;
 extern intptr_t V8_CONTEXT_IDX_EXT;

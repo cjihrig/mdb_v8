@@ -116,6 +116,7 @@ intptr_t V8_SeqStringTag;
 intptr_t V8_ConsStringTag;
 intptr_t V8_SlicedStringTag;
 intptr_t V8_ExternalStringTag;
+intptr_t V8_ThinStringTag;
 intptr_t V8_FailureTag;
 intptr_t V8_FailureTagMask;
 intptr_t V8_HeapObjectTag;
@@ -239,6 +240,7 @@ ssize_t V8_OFF_SHAREDFUNCTIONINFO_NAME;
 ssize_t V8_OFF_SLICEDSTRING_PARENT;
 ssize_t V8_OFF_SLICEDSTRING_OFFSET;
 ssize_t V8_OFF_STRING_LENGTH;
+ssize_t V8_OFF_THINSTRING_ACTUAL;
 ssize_t V8_OFF_JSTYPEDARRAY_LENGTH;
 ssize_t V8_OFF_JSARRAYBUFFER_BACKINGSTORE;
 ssize_t V8_OFF_JSARRAYBUFFERVIEW_BUFFER;
@@ -311,6 +313,7 @@ static v8_constant_t v8_constants[] = {
 	{ &V8_SlicedStringTag,		"v8dbg_SlicedStringTag",
 	    V8_CONSTANT_FALLBACK(0, 0), 0x3 },
 	{ &V8_ExternalStringTag,	"v8dbg_ExternalStringTag"	},
+	{ &V8_ThinStringTag,	"v8dbg_ThinStringTag"	},
 	{ &V8_FailureTag,		"v8dbg_FailureTag",
 		V8_CONSTANT_REMOVED_SINCE(3, 28) },
 	{ &V8_FailureTagMask,		"v8dbg_FailureTagMask",
@@ -558,6 +561,8 @@ static v8_offset_t v8_offsets[] = {
 	    "SlicedString", "parent", B_TRUE },
 	{ &V8_OFF_STRING_LENGTH,
 	    "String", "length" },
+	{ &V8_OFF_THINSTRING_ACTUAL,
+	    "ThinString", "actual" },
 #ifdef _LP64
 	{ &V8_OFF_JSTYPEDARRAY_LENGTH,
 	    "JSTypedArray", "length",
@@ -1137,6 +1142,8 @@ again:
 		}
 	}
 
+printf("V8_ThinStringTag = %p\n", (void*) V8_ThinStringTag);
+printf("V8_OFF_THINSTRING_ACTUAL = %p\n", (void*) V8_OFF_THINSTRING_ACTUAL);
 	return (failed ? -1 : 0);
 }
 

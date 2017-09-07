@@ -70,6 +70,8 @@
 	(((type) & V8_StringRepresentationMask) == V8_SlicedStringTag)
 #define	V8_STRREP_EXT(type)	\
 	(((type) & V8_StringRepresentationMask) == V8_ExternalStringTag)
+#define	V8_STRREP_THIN(type)	\
+	(((type) & V8_StringRepresentationMask) == V8_ThinStringTag)
 
 /*
  * Several of the following constants and transformations are hardcoded in V8 as
