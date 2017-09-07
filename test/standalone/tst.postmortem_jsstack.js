@@ -114,6 +114,11 @@ dtrace.on('exit', function (code) {
 		for (var i = 0; i < lines.length; i++) {
 			var line = lines[i];
 
+			// In Node 8, os.loadavg() has an additional JS frame. Ignore it.
+			if (line.indexOf(sentinel) !== -1 && line.indexOf('loadavg') !== -1) {
+				continue;
+			}
+
 			if (matched == 1 && line.indexOf(arg1) === 0) {
 				straddr =
 				    line.substr(arg1.length).split(' ')[0];
