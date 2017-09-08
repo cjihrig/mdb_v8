@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <inttypes.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <libproc.h>
@@ -1142,8 +1143,6 @@ again:
 		}
 	}
 
-printf("V8_ThinStringTag = %p\n", (void*) V8_ThinStringTag);
-printf("V8_OFF_THINSTRING_ACTUAL = %p\n", (void*) V8_OFF_THINSTRING_ACTUAL);
 	return (failed ? -1 : 0);
 }
 

@@ -137,11 +137,9 @@ v8string_load(uintptr_t addr, int memflags)
 			goto fail;
 		}
 	} else if (V8_STRREP_THIN(type)) {
-printf("*** got a thin string\n");
 		if (read_heap_ptr(
 		    &strp->v8s_info.v8s_thininfo.v8s_thin_actual,
 		    addr, V8_OFF_THINSTRING_ACTUAL) != 0) {
-printf("***** failed to read the thin string\n");
 			v8_warn("failed to read thin string: %p\n", addr);
 			goto fail;
 		}
@@ -741,13 +739,13 @@ v8string_write_thin(v8string_t *strp, mdbv8_strbuf_t *strb,
 	} else {
 		flags = JSSTR_BUMPDEPTH(v8flags);
 
-/******/
-mdb_printf("*** thin str %p: actual %p\n", strp->v8s_addr, actual_addr);
-mdb_printf("**** actual: %s\n", actual);
-size_t nstrchrs = v8string_length(strp);
-printf("**** str %p: length %d chars\n", (void*) strp->v8s_addr, (int)nstrchrs);
 		rv = v8string_write(actual, strb, strflags, flags);
-mdb_printf("**** string is: %s\n", strb);
+/*
+size_t nstrchrs = v8string_length(strp);
+mdb_printf("*** thin str %p: actual %p: length %d\n", strp->v8s_addr, actual_addr, nstrchrs);
+mdb_printf("***** actual: %s\n", actual);
+mdb_printf("***** string is: %s\n", strb);
+*/
 	}
 
 	v8string_free(actual);

@@ -21,6 +21,14 @@ var os = require('os');
 var path = require('path');
 var util = require('util');
 
+function makeThinString(str1, str2) {
+	var str = str1 + str2;
+	var obj = {};
+
+	obj[str];	// Turn the cons string into a thin string.
+	return str;
+}
+
 /*
  * This class sets a variety of properties that together use most of the kinds
  * of values that currently support.  As a result, using "findjsobjects" to
@@ -37,6 +45,7 @@ function Menagerie() {
 	this.a_seqstring = 'my_string';
 	this.a_consstring = this.a_seqstring + '_suffix';
 	this.a_slicedstring = this.a_seqstring.slice(3, 5);
+	this.a_thinstring = makeThinString('foo', 'bar');
 
 	this.a_number_smallint = 3;
 	this.a_number_zero = 0;
@@ -161,6 +170,7 @@ gcore.on('exit', function (code) {
 		    '    "a_seqstring": "my_string",',
 		    '    "a_consstring": "my_string_suffix",',
 		    '    "a_slicedstring": "st",',
+				'    "a_thinstring": "foobar",',
 		    '    "a_number_smallint": 3,',
 		    '    "a_number_zero": 0,',
 		    '    "a_number_float": 4.700000e+00,',
